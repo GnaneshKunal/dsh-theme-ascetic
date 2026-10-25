@@ -1,0 +1,6 @@
+# dsh-theme-ascetic bundle layer: one Loader row pointing at the package's host
+# half (lib/index.js). The browser half (lib/client.js) is discovered through
+# the dsh.client manifest in package.json, not through this patch.
+- insert:
+    - id: ui-theme-ascetic
+      name: dsh-theme-ascetic
