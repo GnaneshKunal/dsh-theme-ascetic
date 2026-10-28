@@ -178,3 +178,17 @@ real `pointer: coarse`):
 `scripts/mobile-audit.js` is the audit itself: paste it into a DevTools console
 (or inject it through CDP) at any viewport and it prints the numbers above —
 overflow, targets under 24 and under 44, input type sizes, status reachability.
+
+Two things that pass never saw until an iPhone 16 profile (393×852 @3, coarse)
+was used by hand, and both are fixed:
+
+* the transcript's **"back to bottom"** pill only exists while the page is
+  scrolled up — 34×34, drawn with the host's 0.5px ring and soft elevation
+  shadows, which read as a pale box against the flat skin. It is 44×44 with a
+  hairline now. **Run the audit twice: at rest and scrolled up.**
+* **"load earlier"** is 22px tall and carries no class at all, so `:not([class])`
+  is the only handle on it; it gets 36px.
+
+Chrome's device emulation reports every `env(safe-area-inset-*)` as `0px` even on
+an iPhone profile, so the safe-area padding cannot be verified there — it needs
+a real device, or Safari's responsive mode.

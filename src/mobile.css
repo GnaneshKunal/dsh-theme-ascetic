@@ -423,6 +423,26 @@ html[data-ascii] {
   html[data-ascii] [data-chat-flow-kind] :is(div, button)[role="button"]:not(#ax-specificity) {
     min-height: 32px;
   }
+  /* Controls that only exist while the transcript is scrolled, so a pass over a
+     resting page never sees them: the "back to bottom" pill (34x34, with the
+     host's 0.5px ring and soft elevation shadows, which read as a light box
+     against the flat skin) and the "load earlier" button (22px tall, and it has
+     no class at all — `:not([class])` is the only handle on it). */
+  html[data-ascii] button[class*="_toBottom"]:not(#ax-specificity) {
+    min-width: var(--ax-hit) !important;
+    min-height: var(--ax-hit) !important;
+    background: var(--ax-bg1) !important;
+    border: 0 !important;
+    box-shadow: 0 0 0 1px var(--ax-line) !important;
+    color: var(--ax-ink2) !important;
+  }
+  html[data-ascii] button[class*="_toBottom"]:not(#ax-specificity) svg {
+    width: 16px;
+    height: 16px;
+  }
+  html[data-ascii] [data-conversation-content] button:not([class]):not(#ax-specificity) {
+    min-height: 36px !important;
+  }
 }
 
 @media (max-width: 1023px) and (pointer: coarse) {
