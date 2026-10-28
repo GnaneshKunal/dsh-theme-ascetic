@@ -326,7 +326,13 @@ html[data-ascii] {
    specificity, so these need `:not(#x)` to out-rank them — otherwise the
    declaration is dropped and the button stays 28px. The conversation tabs are
    left to that plugin on purpose: forcing them to 44px overlaps the header's
-   title row, which is worse than a 26px tab that is 50-78px wide. */
+   title row, which is worse than a 26px tab that is 50-78px wide.
+
+   The "N subagents" chip in the same title cluster is also left at its natural
+   size. It sits in an absolutely positioned box that is 21px tall with
+   `overflow: hidden`, so a blanket 44px rule here does not grow it — it clips
+   the chip in half. Every other control in that cluster (Agent Team, the
+   directory toggle, Files) is targeted by name above. */
 
 @media (max-width: 1023px) and (pointer: coarse) {
   html[data-ascii] :is([data-mobile-nav="frame"] [data-mobile-nav="toggle"],
@@ -338,10 +344,6 @@ html[data-ascii] {
     justify-content: center;
   }
   html[data-ascii] [data-mobile-nav="frame"] header [aria-label="Agent Team"]:not(#ax-specificity) {
-    min-width: var(--ax-hit) !important;
-    min-height: var(--ax-hit) !important;
-  }
-  html[data-ascii] [data-mobile-nav="frame"] header:has([class*="_headerLeading"]) [class*="_titleCluster"] :is(button):not(#ax-specificity) {
     min-width: var(--ax-hit) !important;
     min-height: var(--ax-hit) !important;
   }

@@ -192,3 +192,13 @@ was used by hand, and both are fixed:
 Chrome's device emulation reports every `env(safe-area-inset-*)` as `0px` even on
 an iPhone profile, so the safe-area padding cannot be verified there — it needs
 a real device, or Safari's responsive mode.
+
+### The header's status chips stay small on purpose
+
+The "N subagents" and "N background jobs" chips sit in absolutely positioned
+header boxes that are ~21px tall with `overflow: hidden`. A blanket 44px rule on
+header buttons does not grow them, it slices them in half — so the rule was
+removed and the chips keep their natural compact size (fully visible, 105-116px
+wide). They are the one place the theme accepts a sub-44 target: the alternative
+is hiding the only on-phone view of running subagents, or fighting the host's
+absolute layout and pushing the chip 25px into the transcript.
