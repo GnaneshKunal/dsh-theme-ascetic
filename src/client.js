@@ -580,12 +580,44 @@ function SheetGrip({ title, onClose }) {
 }
 
 function QuickMenu({ p, onClose }) {
+  const compact = useMedia(COMPACT_Q)
+  const [expanded, setExpanded] = React.useState(null)
   const row = (key, label, value, onClick) => h('button', { key, className: 'ax-menu-row', onClick },
     h('span', null, label), h('span', { className: 'ax-key' }, value))
+  // A cycle row is fine with a mouse. In a sheet it is up to 18 taps to reach
+  // one of the 19 palettes, so the sheet expands the list inline instead:
+  // every option visible, one tap to choose.
+  const pick = (key, label, field, values) => {
+    if (!compact) {
+      return row(key, label, `< ${p[field]} >`, () => prefs.cycle(field, values))
+    }
+    const open = expanded === field
+    return h(React.Fragment, { key },
+      h('button', {
+        className: 'ax-menu-row',
+        'aria-expanded': open,
+        'aria-haspopup': 'listbox',
+        onClick: () => setExpanded(open ? null : field),
+      },
+      h('span', null, label),
+      h('span', { className: 'ax-key' }, p[field]),
+      h('span', { className: 'ax-caret' }, open ? '▾' : '▸')),
+      open ? h('div', { className: 'ax-options', role: 'listbox', 'aria-label': label },
+        values.map((v) => h('button', {
+          key: v,
+          role: 'option',
+          className: 'ax-option',
+          'aria-selected': p[field] === v,
+          onClick: () => { prefs.set({ [field]: v }); setExpanded(null) },
+        },
+        field === 'palette' ? h(Swatch, { choice: v }) : null,
+        h('span', { className: 'ax-option-name' }, v),
+        field === 'density' ? h('span', { className: 'ax-dim ax-option-hint' }, DENSITY_ROWS[v]) : null))) : null)
+  }
   return h(Popup, { className: 'ax-menu', title: 'ascii', onClose },
-    h('div', { className: 'ax-menu-title' }, '┌─ ascii ─ click to cycle'),
-    row('pal', 'palette', `< ${p.palette} >`, () => prefs.cycle('palette', PALETTE_CHOICES)),
-    row('den', 'density', `< ${p.density} >`, () => prefs.cycle('density', DENSITIES)),
+    h('div', { className: 'ax-menu-title' }, compact ? '┌─ ascii' : '┌─ ascii ─ click to cycle'),
+    pick('pal', 'palette', 'palette', PALETTE_CHOICES),
+    pick('den', 'density', 'density', DENSITIES),
     row('chat', 'chat style', `< ${p.chat} >`, () => prefs.cycle('chat', CHAT_STYLES)),
     row('hero', 'hero art', `< ${p.hero} >`, () => prefs.cycle('hero', HEROES)),
     h('label', { key: 'logo', className: 'ax-menu-row ax-menu-field' }, h('span', null, 'logo text'), h(LogoInput)),

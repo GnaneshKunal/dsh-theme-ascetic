@@ -69,6 +69,22 @@ viewport:
 * `z-index: 1200`, above the header; the drawer sits at 1300 so a sheet never
   covers an open drawer.
 
+### Visible options instead of cycling
+
+On desktop the `ASCII` menu cycles a value per click, which is fine with a mouse.
+In a sheet it is the wrong control: worse, the `pal` / `den` swatch pickers are
+hidden below 820px, so a phone user could only *cycle* — up to **18 taps** to
+reach a palette out of 19.
+
+So in the sheet the palette and density rows expand inline into a two-column
+grid of 48px chips (palette chips carry a colour strip, and the selected one gets
+an accent edge), and choosing one applies it and collapses the list. Every option
+is visible and one tap away — the "prefer visible controls over menus" rule from
+[Claude's MCP Apps design guidelines](https://claude.com/docs/connectors/building/mcp-apps/design-guidelines),
+which also supplies the 320pt minimum viewport and "no interactive control flush
+against an edge". Chat style and hero art keep the cycle row: they are changed
+rarely and the chip grid would bury the toggles.
+
 Desktop is untouched: the menu is still anchored 4px from the left, 300px wide,
 18px rows.
 
@@ -97,7 +113,7 @@ DPR 3). Counted over targets intersecting the viewport, sheets closed.
 | Surface | Before | After |
 |---|---|---|
 | Status segments | 11×18, 52×18, 180×18, 224×18 | 44×44, 72×44, 274×44 (all hit-testable) |
-| Status menu rows | 18px tall, 12px type | 48px tall, 14px type |
+| Status menu rows | 18px tall, 12px type | 48px tall, 14px type; palette/density expand to 48px chips |
 | Settings chips | 22px tall | 44px tall |
 | Logo text input | 18px tall, 12px type | 36px tall, 16px type |
 | Drawer rows | 22px | 44px |
@@ -126,8 +142,13 @@ Left alone on purpose:
 
 The host already sets `viewport-fit=cover` and
 `interactive-widget=resizes-content`, so `env(safe-area-inset-*)` is live and was
-simply unused. The layer adds it to the status bar, the sheets, the docked
-popovers, the composer dock and the drawer's foot.
+simply unused. All four edges are used, not just the bottom: in landscape a
+notched phone reserves ~47px on each side, so the status bar takes
+`max(4px, env(safe-area-inset-left|right))` — which also keeps the first control
+off the edge on devices that report no inset at all — and the sheets, the docked
+popovers, the drawer and the horizontally scrolling strips (composer dock,
+Markdown tables and code blocks, via `scroll-padding-inline`) all clear the
+side insets.
 
 `client.js` also watches `window.visualViewport` and writes `--ax-kb` plus a
 `data-ascii-kb` flag (rAF-batched, 120px of hysteresis so the URL bar collapsing
